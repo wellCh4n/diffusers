@@ -789,6 +789,8 @@ def main():
     running_loss = 0.0
     for epoch in range(first_epoch, args.num_train_epochs):
         unet.train()
+        epoch_running_loss = 0.0
+        epoch_steps = 0
         train_loss = 0.0
         for step, batch in enumerate(train_dataloader):
             with accelerator.accumulate(unet):
@@ -867,10 +869,12 @@ def main():
             if accelerator.sync_gradients:
                 progress_bar.update(1)
                 global_step += 1
+                epoch_steps += 1
                 running_loss += train_loss
+                epoch_running_loss += train_loss
                 avg_loss = running_loss / global_step
-                accelerator.log({"loss/average": avg_loss}, step=global_step)
-                accelerator.log({"train_loss": train_loss}, step=global_step)
+                accelerator.log({"train/loss/average": avg_loss}, step=global_step)
+                accelerator.log({"train/loss/current": train_loss}, step=global_step)
                 train_loss = 0.0
 
                 if global_step % args.checkpointing_steps == 0:
@@ -916,6 +920,9 @@ def main():
 
             if global_step >= args.max_train_steps:
                 break
+
+        epoch_avg = epoch_running_loss / epoch_steps
+        accelerator.log({"train/loss/epoch": epoch_avg}, step=epoch)
 
         if accelerator.is_main_process:
             if args.validation_prompt is not None and epoch % args.validation_epochs == 0:
