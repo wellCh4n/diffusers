@@ -852,6 +852,11 @@ def main():
                 # Gather the losses across all processes for logging (if we use distributed training).
                 avg_loss = accelerator.gather(loss.repeat(args.train_batch_size)).mean()
                 train_loss += avg_loss.item() / args.gradient_accumulation_steps
+                if accelerator.sync_gradients:
+                    global_step += 1
+                    accelerator.log({"train/loss/average": avg_loss}, step=global_step)
+                    accelerator.log({"train/loss/current": train_loss}, step=global_step)
+                    train_loss = 0.0
 
                 # Backpropagate
                 accelerator.backward(loss)
@@ -865,9 +870,6 @@ def main():
             # Checks if the accelerator has performed an optimization step behind the scenes
             if accelerator.sync_gradients:
                 progress_bar.update(1)
-                global_step += 1
-                accelerator.log({"train_loss": train_loss}, step=global_step)
-                train_loss = 0.0
 
                 if global_step % args.checkpointing_steps == 0:
                     if accelerator.is_main_process:
