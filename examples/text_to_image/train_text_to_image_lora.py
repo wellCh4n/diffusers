@@ -786,6 +786,7 @@ def main():
         disable=not accelerator.is_local_main_process,
     )
 
+    running_loss = 0.0
     for epoch in range(first_epoch, args.num_train_epochs):
         unet.train()
         train_loss = 0.0
@@ -866,6 +867,9 @@ def main():
             if accelerator.sync_gradients:
                 progress_bar.update(1)
                 global_step += 1
+                running_loss += train_loss
+                avg_loss = running_loss / global_step
+                accelerator.log({"loss/average": avg_loss}, step=global_step)
                 accelerator.log({"train_loss": train_loss}, step=global_step)
                 train_loss = 0.0
 
