@@ -490,8 +490,8 @@ def main():
             ).repo_id
     # Load scheduler, tokenizer and models.
     noise_scheduler = DDPMScheduler.from_pretrained(args.pretrained_model_name_or_path, subfolder="scheduler")
-    tokenizer = CLIPTokenizer.from_pretrained(pretrained_model_name_or_path="clip-vit-base-patch32")
-    text_encoder = CLIPTextModel.from_pretrained(pretrained_model_name_or_path="clip-vit-base-patch32")
+    tokenizer = CLIPTokenizer.from_pretrained(pretrained_model_name_or_path="jinaai/jina-clip-v2")
+    text_encoder = CLIPTextModel.from_pretrained(pretrained_model_name_or_path="jinaai/jina-clip-v2")
     vae = AutoencoderKL.from_pretrained(
         args.pretrained_model_name_or_path, subfolder="vae", revision=args.revision, variant=args.variant
     )
