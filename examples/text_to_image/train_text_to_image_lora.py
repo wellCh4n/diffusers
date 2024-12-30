@@ -40,7 +40,7 @@ from peft import LoraConfig
 from peft.utils import get_peft_model_state_dict
 from torchvision import transforms
 from tqdm.auto import tqdm
-from transformers import CLIPTextModel, CLIPTokenizer
+from transformers import CLIPTextModel, CLIPTokenizer, AutoModel
 
 import diffusers
 from diffusers import AutoencoderKL, DDPMScheduler, DiffusionPipeline, StableDiffusionPipeline, UNet2DConditionModel
@@ -490,8 +490,8 @@ def main():
             ).repo_id
     # Load scheduler, tokenizer and models.
     noise_scheduler = DDPMScheduler.from_pretrained(args.pretrained_model_name_or_path, subfolder="scheduler")
-    tokenizer = CLIPTokenizer.from_pretrained(pretrained_model_name_or_path="jinaai/jina-clip-v2", trust_remote_code=True)
-    text_encoder = CLIPTextModel.from_pretrained(pretrained_model_name_or_path="jinaai/jina-clip-v2", trust_remote_code=True)
+    tokenizer = AutoModel.from_pretrained("jinaai/jina-clip-v2", trust_remote_code=True).get_tokenizer()
+    text_encoder = AutoModel.from_pretrained("jinaai/jina-clip-v2", trust_remote_code=True).get_text_encoder()
     vae = AutoencoderKL.from_pretrained(
         args.pretrained_model_name_or_path, subfolder="vae", revision=args.revision, variant=args.variant
     )
