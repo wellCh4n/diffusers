@@ -491,7 +491,7 @@ def main():
     # Load scheduler, tokenizer and models.
     noise_scheduler = DDPMScheduler.from_pretrained(args.pretrained_model_name_or_path, subfolder="scheduler")
     tokenizer = AutoModel.from_pretrained("jinaai/jina-clip-v2", trust_remote_code=True).get_tokenizer()
-    text_encoder = AutoModel.from_pretrained("jinaai/jina-clip-v2", trust_remote_code=True).get_text_features()
+    text_encoder = AutoModel.from_pretrained("jinaai/jina-clip-v2", trust_remote_code=True).text_model
     vae = AutoencoderKL.from_pretrained(
         args.pretrained_model_name_or_path, subfolder="vae", revision=args.revision, variant=args.variant
     )
