@@ -812,7 +812,9 @@ def main():
 
                 # Add noise to the latents according to the noise magnitude at each timestep
                 # (this is the forward diffusion process)
+                accelerator.print(f"##### noise shape: {noise.shape}")
                 noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
+                accelerator.print(f"##### noise noisy_latents: {noisy_latents.shape}")
 
                 # Get the text embedding for conditioning
                 encoder_hidden_states = text_encoder(batch["input_ids"], return_dict=False)[0]
