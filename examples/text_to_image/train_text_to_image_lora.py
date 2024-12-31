@@ -791,11 +791,8 @@ def main():
         for step, batch in enumerate(train_dataloader):
             with accelerator.accumulate(unet):
                 # Convert images to latent space
-                accelerator.print(f"##### pixel_values shape: {batch['pixel_values'].shape}")
                 latents = vae.encode(batch["pixel_values"].to(dtype=weight_dtype)).latent_dist.sample()
-                accelerator.print(f"##### latents 1 shape: {latents.shape}")
                 latents = latents * vae.config.scaling_factor
-                accelerator.print(f"##### latents 2 shape: {latents.shape}")
 
                 # Sample noise that we'll add to the latents
                 noise = torch.randn_like(latents)
@@ -812,9 +809,7 @@ def main():
 
                 # Add noise to the latents according to the noise magnitude at each timestep
                 # (this is the forward diffusion process)
-                accelerator.print(f"##### noise shape: {noise.shape}")
                 noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
-                accelerator.print(f"##### noise noisy_latents: {noisy_latents.shape}")
 
                 # Get the text embedding for conditioning
                 encoder_hidden_states = text_encoder(batch["input_ids"], return_dict=False)[0]
@@ -833,7 +828,6 @@ def main():
                     raise ValueError(f"Unknown prediction type {noise_scheduler.config.prediction_type}")
 
                 # Predict the noise residual and compute loss
-                accelerator.print(f"##### encoder_hidden_states shape: {encoder_hidden_states.shape}")
                 model_pred = unet(noisy_latents, timesteps, encoder_hidden_states, return_dict=False)[0]
 
                 if args.snr_gamma is None:
