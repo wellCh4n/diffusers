@@ -817,7 +817,7 @@ def main():
                 accelerator.print(f"##### noise noisy_latents: {noisy_latents.shape}")
 
                 # Get the text embedding for conditioning
-                encoder_hidden_states = text_encoder(batch["input_ids"], return_dict=False)[0]
+                encoder_hidden_states = text_encoder(batch["input_ids"], return_dict=False, truncate_dim=768)[0]
 
                 # Get the target for loss depending on the prediction type
                 if args.prediction_type is not None:
