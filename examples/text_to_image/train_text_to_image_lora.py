@@ -791,8 +791,11 @@ def main():
         for step, batch in enumerate(train_dataloader):
             with accelerator.accumulate(unet):
                 # Convert images to latent space
+                accelerator.print(f"##### pixel_values shape: {batch['pixel_values'].shape}")
                 latents = vae.encode(batch["pixel_values"].to(dtype=weight_dtype)).latent_dist.sample()
+                accelerator.print(f"##### latents 1 shape: {latents.shape}")
                 latents = latents * vae.config.scaling_factor
+                accelerator.print(f"##### latents 2 shape: {latents.shape}")
 
                 # Sample noise that we'll add to the latents
                 noise = torch.randn_like(latents)
